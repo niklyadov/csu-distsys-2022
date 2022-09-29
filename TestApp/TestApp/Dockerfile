@@ -4,7 +4,7 @@ EXPOSE 8000
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["TestApp/TestApp.csproj", "TestApp/"]
+COPY "TestApp/TestApp.csproj" "TestApp/"
 RUN dotnet restore "TestApp/TestApp.csproj"
 COPY . .
 WORKDIR "/src/TestApp"
