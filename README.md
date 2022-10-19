@@ -110,6 +110,78 @@
 5. [Multi-stage builds для компилируемых языков](https://docs.docker.com/develop/develop-images/multistage-build/)
 
 
+
+### Практика 2. Взаимодействие контейнеров
+
+![](diagrams/lab2.png)
+
+[Презентация](https://docs.google.com/presentation/d/16CWXqHiGsEM6ieH60OVCy2KYqLKKK5ok1Awe7r6_GLM/edit?usp=sharing)
+
+**Задание**
+1. Дописать приложение, чтобы оно содержало два эндпоинта
+  * POST /links — сохраняет ссылку в БД и возвращает ее id
+  * GET /links/<id> — отдает ссылку из БД по id
+2. Добавить контейнер с PostgreSQL и настроить его взаимодействие с приложением
+3. Настроить запуск обоих контейнеров через Docker Compose
+
+**Ссылки**
+1. [12-факторное приложение](https://12factor.net/)
+2. [Postgres по Docker Hub](https://hub.docker.com/_/postgres)
+3. [Сеть в Docker](https://docs.docker.com/network/network-tutorial-standalone/)
+4. [Volumes в Docker](https://docs.docker.com/storage/volumes/)
+5. [Docker Compose](https://docs.docker.com/compose/)
+6. [Документация по docker-compose.yml](https://docs.docker.com/compose/compose-file/)
+
+ 
+### Практика 3. Работа с RabbitMQ
+
+![](diagrams/lab3.png)
+
+[Презентация](https://docs.google.com/presentation/d/1RZSa4e2xxS06PfAvgYiFazTukE9Fg1WzO7LvMFDvIXI/edit?usp=sharing)
+
+**Задание**
+1. Добавить контейнер с RabbitMQ
+2. В приложении добавить в модель ссылки поле «статус», добавить эндпоинт PUT /links/<id> для обновления статуса ссылки. При добавлении ссылки отправлять ее в очередь сообщений
+3. Добавить консьюмер, который слушает очередь сообщений и получает все новые ссылки, делает запрос к ним и сохраняет HTTP-статус ответа через новый эндпоинт приложения. 
+
+**Ссылки**
+1. [RabbitMQ на Docker Hub](https://hub.docker.com/_/rabbitmq)
+2. [Тьюториал по RabbitMQ](https://www.rabbitmq.com/getstarted.html)
+3. [Healthchecks в docker-compose](https://stackoverflow.com/questions/31746182/docker-compose-wait-for-container-x-before-starting-y )
+
+ 
+### Практика 4. Балансировка нагрузки через nginx
+
+![](diagrams/lab4.png)
+
+[Презентация](https://docs.google.com/presentation/d/1Fst4BQ9wX9u5jnd7_-sx_v_krO_AoO7k8lm5JPLZw8I/edit?usp=sharing)
+
+**Задание**
+1. Поднять два отдельных контейнера с API. Каждый из них должен добавлять в ответ собственную метку, чтобы было понятно, какой из контейнеров ответил (например, через HTTP-хедер)
+2. Поднять контейнер с nginx, который проксирует запросы на API-контейнеры и балансирует нагрузку между ними
+
+**Ссылки**
+1. [nginx на Docker Hub](https://hub.docker.com/_/nginx)
+2. [Документация по nginx](http://nginx.org/ru/docs/beginners_guide.html)
+3. [Балансировка нагрузки в nginx](http://nginx.org/en/docs/http/load_balancing.html)
+ 
+
+### Практика 5. Кэширование в Redis
+
+![](diagrams/lab5.png)
+
+[Презентация](https://docs.google.com/presentation/d/1qrn75ot8MPivvFHEZOKw5IvrIrBd6c_Iui6NtEZmuF0/edit?usp=sharing)
+
+**Задание**
+1. Добавить контейнер с Redis
+2. Добавить в коде консьюмера использование Redis в качестве кэша для ответов от внешних сервисов
+
+
+**Ссылки**
+1. [Redis на Docker Hub](https://hub.docker.com/_/redis)
+2. [Документация по Redis (введение)](https://redis.io/topics/data-types-intro)
+
+
 ## Итоговая оценка
  
 ### Баллы за практические задачи
@@ -143,3 +215,8 @@
 | 140 | 160 |  **3** |
 | 165 | 180 |  **4** |
 | 185 | 200 |  **5** |
+ 
+ 
+## Курсовые работы
+ 
+[Презентация](https://docs.google.com/presentation/d/12MxBuJa7GyGmqgzNIkchcDpYIXforI0dPUP8XSn3bn4/edit?usp=sharing)
