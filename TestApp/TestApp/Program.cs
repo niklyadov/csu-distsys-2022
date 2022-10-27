@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client.Core.DependencyInjection;
 using TestApp.DAL;
 using TestApp.DAL.QueryBuilders;
 using TestApp.Service;
@@ -8,11 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-Console.WriteLine(builder.Configuration.GetConnectionString("Default"));
+var rabbitMqSection = builder.Configuration.GetSection("RabbitMq");
+var exchangeSection = builder.Configuration.GetSection("RabbitMqExchange");
+
+builder.Services.AddRabbitMqServices(rabbitMqSection)
+    .AddProductionExchange("test-app", exchangeSection);
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));

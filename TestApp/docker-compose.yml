@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+    volumes:
+        - ./rabbitmq/data/:/var/lib/rabbitmq/
+        - ./rabbitmq/log/:/var/log/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
   db:
     image: postgres
     restart: always
@@ -28,8 +41,24 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     links:
       - db
+      - rabbitmq
+  test-app-worker1:
+    build:
+      context: .
+      dockerfile: Test-app-Worker.Dockerfile
+    container_name: test-app-worker1
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    links:
+      - db
+      - rabbitmq
 
 volumes:
   db:
