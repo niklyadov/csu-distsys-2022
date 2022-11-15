@@ -21,5 +21,8 @@
     },
     "AppConfiguration": {
       "ApiUri": "http://web"
+    },
+    "ConnectionStrings": {
+      "Redis": "cache:6379"
     }
 }

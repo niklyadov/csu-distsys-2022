@@ -1,6 +1,11 @@
 version: '3.8'
 
 services:
+  cache:
+    image: redis
+    container_name: 'cache'
+    ports:
+      - "6379:6379"
   rabbitmq:
     image: rabbitmq
     container_name: 'rabbitmq'
@@ -87,6 +92,7 @@ services:
     links:
       - db
       - rabbitmq
+      - cache
 
 volumes:
   db:

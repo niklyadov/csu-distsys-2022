@@ -1,4 +1,5 @@
 using RabbitMQ.Client.Core.DependencyInjection;
+using StackExchange.Redis;
 using TestApp.Worker;
 
 
@@ -7,8 +8,11 @@ var host = Host.CreateDefaultBuilder(args)
     {
         var rabbitMqSection = hostContext.Configuration.GetSection("RabbitMq");
         var exchangeSection = hostContext.Configuration.GetSection("RabbitMqExchange");
-
-        services.AddSingleton<LinksPrepareService>();
+        
+        services.AddSingleton<IDatabase>(cfg 
+            => ConnectionMultiplexer
+                .Connect(hostContext.Configuration.GetConnectionString("redis"))
+                .GetDatabase());
         
         services.AddRabbitMqServices(rabbitMqSection)
             .AddConsumptionExchange("test-app", exchangeSection)
