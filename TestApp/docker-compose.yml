@@ -5,10 +5,10 @@ services:
     image: rabbitmq
     container_name: 'rabbitmq'
     ports:
-        - 5672:5672
+        - "5672:5672"
     volumes:
-        - ./rabbitmq/data/:/var/lib/rabbitmq/
-        - ./rabbitmq/log/:/var/log/rabbitmq
+        - ./docker-configuration/rabbitmq/data/:/var/lib/rabbitmq/
+        - ./docker-configuration/rabbitmq/log/:/var/log/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -22,7 +22,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=testdb
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./docker-configuration/postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -30,14 +30,40 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  test-app:
+  web: 
+    image: nginx
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - NGINX_PORT=80
+    volumes:
+      - ./docker-configuration/nginx/templates:/etc/nginx/templates
+    links:
+      - api1.test-app
+      - api2.test-app
+  api1.test-app:
     build:
       context: .
       dockerfile: Test-app.Dockerfile
-    container_name: test-app
-    ports:
-      - 8000:8000
+    container_name: api1.test-app
+    volumes:
+      - ./docker-configuration/test-app-api/api1.appsettings.json:/app/appsettings.json
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    links:
+      - db
+      - rabbitmq
+  api2.test-app:
+    build:
+      context: .
+      dockerfile: Test-app.Dockerfile
+    container_name: api2.test-app
+    volumes:
+      - ./docker-configuration/test-app-api/api2.appsettings.json:/app/appsettings.json
     depends_on:
       db:
         condition: service_healthy
@@ -51,6 +77,8 @@ services:
       context: .
       dockerfile: Test-app-Worker.Dockerfile
     container_name: test-app-worker1
+    volumes:
+      - ./docker-configuration/test-app-worker/worker1.appsettings.json:/app/appsettings.json
     depends_on:
       db:
         condition: service_healthy

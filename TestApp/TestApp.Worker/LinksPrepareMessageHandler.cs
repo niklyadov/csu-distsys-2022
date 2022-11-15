@@ -1,7 +1,6 @@
-using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Core.DependencyInjection;
 using RabbitMQ.Client.Core.DependencyInjection.MessageHandlers;
 using RabbitMQ.Client.Core.DependencyInjection.Models;
@@ -11,11 +10,13 @@ namespace TestApp.Worker;
 public class Worker : IMessageHandler
 {
     private readonly ILogger<Worker> _logger;
+    private readonly ApiSettings _apiSettings;
     private readonly HttpClient _httpClient = new ();
 
-    public Worker(ILogger<Worker> logger)
+    public Worker(ILogger<Worker> logger, IOptions<ApiSettings> apiSettings)
     {
         _logger = logger;
+        _apiSettings = apiSettings.Value;
     }
 
     public void Handle(MessageHandlingContext context, string matchingRoute)
@@ -39,7 +40,7 @@ public class Worker : IMessageHandler
             _logger.LogInformation("{Link} response code {Code}", link, response.StatusCode);
 
             _logger.LogInformation("{Link}", link);
-            await UpdateLinkRequestAsync(link);
+            await UpdateLinkRequestAsync(link, new Uri(_apiSettings.ApiUri, "link"));
 
         }
         catch (Exception exception)
@@ -48,10 +49,10 @@ public class Worker : IMessageHandler
         }
     }
     
-    private async Task UpdateLinkRequestAsync(Link link, string url = "http://test-app:8000/link")
+    private async Task UpdateLinkRequestAsync(Link link, Uri endpointUri)
     {
         using HttpContent content = new StringContent(JsonSerializer.Serialize(link), Encoding.UTF8, "application/json");
-        using HttpResponseMessage response = await _httpClient.PutAsync(url, content).ConfigureAwait(false);
+        using HttpResponseMessage response = await _httpClient.PutAsync(endpointUri, content).ConfigureAwait(false);
 
         await response.Content.ReadAsStringAsync().ConfigureAwait(false);
     }

@@ -1,0 +1,12 @@
+upstream test-app {
+    server api1.test-app;
+    server api2.test-app;
+}
+
+server {
+    listen ${NGINX_PORT};
+
+    location / {
+        proxy_pass http://test-app;
+    }
+}

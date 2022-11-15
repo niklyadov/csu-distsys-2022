@@ -1,0 +1,36 @@
+{
+    "Kestrel": {
+      "EndPoints": {
+        "Http": {
+          "Url": "http://0.0.0.0:80"
+        }
+      }
+    },
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft.AspNetCore": "Warning"
+      }
+    },
+    "AllowedHosts": "*",
+    "ConnectionStrings": {
+      "Default": "Host=db;Username=postgres;Password=postgres;Database=testdb"
+    },
+    "RabbitMq": {
+      "HostName": "rabbitmq",
+      "Port": "5672",
+      "UserName": "guest",
+      "Password": "guest"
+    },
+    "RabbitMqExchange": {
+      "Queues": [
+        {
+          "Name": "test-app",
+          "RoutingKeys": [ "links-prepare", "links-done" ]
+        }
+      ]
+    },
+    "AppConfiguration": {
+        "AppName": "TestApp.Api 2"
+    }
+  }

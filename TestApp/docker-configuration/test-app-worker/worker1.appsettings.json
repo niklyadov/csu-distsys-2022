@@ -1,0 +1,25 @@
+{
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft.Hosting.Lifetime": "Information"
+      }
+    },
+    "RabbitMq": {
+      "HostName": "rabbitmq",
+      "Port": "5672",
+      "UserName": "guest",
+      "Password": "guest"
+    },
+    "RabbitMqExchange": {
+      "Queues": [
+        {
+          "Name": "test-app",
+          "RoutingKeys": [ "links-prepare", "links-done" ]
+        }
+      ]
+    },
+    "ApiSettings": {
+      "ApiUri": "http://web"
+    }
+}
