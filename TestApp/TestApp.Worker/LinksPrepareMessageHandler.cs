@@ -7,48 +7,37 @@ using RabbitMQ.Client.Core.DependencyInjection.Models;
 
 namespace TestApp.Worker;
 
-public class Worker : IMessageHandler
+public class LinksPrepareMessageHandler : IMessageHandler
 {
-    private readonly ILogger<Worker> _logger;
-    private readonly ApiSettings _apiSettings;
+    private readonly ILogger<LinksPrepareMessageHandler> _logger;
+    private readonly LinksPrepareService _linksPrepareService;
+    private readonly AppConfiguration _appConfiguration;
     private readonly HttpClient _httpClient = new ();
 
-    public Worker(ILogger<Worker> logger, IOptions<ApiSettings> apiSettings)
+    public LinksPrepareMessageHandler(ILogger<LinksPrepareMessageHandler> logger, IOptions<AppConfiguration> apiSettings, 
+        LinksPrepareService linksPrepareService)
     {
         _logger = logger;
-        _apiSettings = apiSettings.Value;
+        _linksPrepareService = linksPrepareService;
+        _appConfiguration = apiSettings.Value;
     }
 
     public void Handle(MessageHandlingContext context, string matchingRoute)
     {
         var message = context.Message.GetMessage(); 
         
-        Task.Run(() => Task.FromResult(WorkWithRequestTask(JsonSerializer.Deserialize<Link>(message))));
+        Task.Run(async () =>
+        {
+            var link = await _linksPrepareService.WorkWithRequestTask(JsonSerializer.Deserialize<Link>(message));
+            
+            _logger.LogInformation("{Link} response code {Code}", link.Url, link.HttpStatusCode);
+
+            await UpdateLinkRequestAsync(link, new Uri(_appConfiguration.ApiUri, "link"));
+
+            _logger.LogInformation("{Link} was updated", link.Url);
+        });
     }
 
-    private async Task WorkWithRequestTask(Link? link)
-    {
-        try
-        {
-            if (link == null) throw new ArgumentNullException(nameof(link));
-        
-            var response = await _httpClient.GetAsync(link.Url);
-
-            link.HttpStatusCode = (int)response.StatusCode;
-            link.ExecutedAt = DateTime.UtcNow;
-
-            _logger.LogInformation("{Link} response code {Code}", link, response.StatusCode);
-
-            _logger.LogInformation("{Link}", link);
-            await UpdateLinkRequestAsync(link, new Uri(_apiSettings.ApiUri, "link"));
-
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError("{Exception}", exception);
-        }
-    }
-    
     private async Task UpdateLinkRequestAsync(Link link, Uri endpointUri)
     {
         using HttpContent content = new StringContent(JsonSerializer.Serialize(link), Encoding.UTF8, "application/json");

@@ -19,7 +19,7 @@
         }
       ]
     },
-    "ApiSettings": {
+    "AppConfiguration": {
       "ApiUri": "http://web"
     }
 }

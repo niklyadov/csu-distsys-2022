@@ -8,11 +8,13 @@ var host = Host.CreateDefaultBuilder(args)
         var rabbitMqSection = hostContext.Configuration.GetSection("RabbitMq");
         var exchangeSection = hostContext.Configuration.GetSection("RabbitMqExchange");
 
+        services.AddSingleton<LinksPrepareService>();
+        
         services.AddRabbitMqServices(rabbitMqSection)
             .AddConsumptionExchange("test-app", exchangeSection)
-            .AddMessageHandlerTransient<Worker>("links-prepare");
+            .AddMessageHandlerTransient<LinksPrepareMessageHandler>("links-prepare");
 
-        services.Configure<ApiSettings>(hostContext.Configuration.GetSection(nameof(ApiSettings)));
+        services.Configure<AppConfiguration>(hostContext.Configuration.GetSection(nameof(AppConfiguration)));
 
     })
     .Build();
