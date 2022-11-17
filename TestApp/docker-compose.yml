@@ -4,8 +4,19 @@ services:
   cache:
     image: redis
     container_name: 'cache'
+    volumes:
+      - ./docker-configuration/redis-data:/var/lib/redis
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=cache
     ports:
-      - "6379:6379"
+    - "8081:8081"
+    links:
+      - cache
   rabbitmq:
     image: rabbitmq
     container_name: 'rabbitmq'
