@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp.Worker", "TestApp.Worker\TestApp.Worker.csproj", "{A038A779-F803-4EAA-A537-1937AC6AC367}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp.Tests", "TestApp.Tests\TestApp.Tests.csproj", "{C7CF2271-8D2B-42F8-8D68-898F223BF9D0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{A038A779-F803-4EAA-A537-1937AC6AC367}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A038A779-F803-4EAA-A537-1937AC6AC367}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A038A779-F803-4EAA-A537-1937AC6AC367}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7CF2271-8D2B-42F8-8D68-898F223BF9D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C7CF2271-8D2B-42F8-8D68-898F223BF9D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7CF2271-8D2B-42F8-8D68-898F223BF9D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C7CF2271-8D2B-42F8-8D68-898F223BF9D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

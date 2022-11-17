@@ -35,14 +35,8 @@ public class LinksPrepareMessageHandler : IMessageHandler
         try
         {
             if (link == null) throw new ArgumentNullException(nameof(link));
-            
-            var cachedUriCode = _cache.StringGet(link.Url.Host);
-            if (cachedUriCode.HasValue && int.TryParse(cachedUriCode, out int httpStatusCode))
-            {
-                link.HttpStatusCode = httpStatusCode;
-                _logger.LogInformation("{Link} from cache!", link.Url);
-            }
-            else
+
+            if (!await TryGetLinkStatusFromCacheAsync(link))
             {
                 var response = await _httpClient.GetAsync(link.Url);
 
@@ -64,6 +58,20 @@ public class LinksPrepareMessageHandler : IMessageHandler
         {
             _logger.LogError("{Exception}", exception);
         }
+    }
+
+    private async Task<bool> TryGetLinkStatusFromCacheAsync(Link linkData)
+    {
+        var cachedUriCode = await _cache.StringGetAsync(linkData.Url.Host);
+        if (cachedUriCode.HasValue && int.TryParse(cachedUriCode, out int httpStatusCode))
+        {
+            linkData.HttpStatusCode = httpStatusCode;
+            _logger.LogInformation("{Link} from cache!", linkData.Url);
+
+            return true;
+        }
+
+        return false;
     }
 
     private async Task UpdateLinkRequestAsync(Link link, Uri endpointUri)
