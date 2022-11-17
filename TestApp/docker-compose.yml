@@ -23,8 +23,9 @@ services:
     ports:
         - "5672:5672"
     volumes:
-        - ./docker-configuration/rabbitmq/data/:/var/lib/rabbitmq/
+        - ./docker-configuration/rabbitmq/data/:/var/lib/rabbitmq
         - ./docker-configuration/rabbitmq/log/:/var/log/rabbitmq
+        - ./docker-configuration/rabbitmq/advanced-configuration.conf:/etc/rabbitmq/conf.d/20-advanced-configuration.conf
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s

@@ -35,8 +35,9 @@ public class LinksPrepareMessageHandler : IMessageHandler
         try
         {
             if (link == null) throw new ArgumentNullException(nameof(link));
-
-            if (_cache.StringGet(link.Url).HasValue && int.TryParse(_cache.StringGet(link.Url), out int httpStatusCode))
+            
+            var cachedUriCode = _cache.StringGet(link.Url.Host);
+            if (cachedUriCode.HasValue && int.TryParse(cachedUriCode, out int httpStatusCode))
             {
                 link.HttpStatusCode = httpStatusCode;
                 _logger.LogInformation("{Link} from cache!", link.Url);
@@ -50,8 +51,8 @@ public class LinksPrepareMessageHandler : IMessageHandler
 
                 _logger.LogInformation("{Link} response code {Code}", link.Url, response.StatusCode);
 
-                _cache.StringSet(link.Url, link.HttpStatusCode.ToString());
-                _cache.KeyExpire(link.Url, DateTime.UtcNow.Add(
+                _cache.StringSet(link.Url.Host, link.HttpStatusCode.ToString());
+                _cache.KeyExpire(link.Url.Host, DateTime.UtcNow.Add(
                     TimeSpan.FromMilliseconds(_config.CacheLifetimeInMilliSeconds)));
             }
 
@@ -79,7 +80,7 @@ public record Link
     public long Id { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? DeletedDateTime { get; set; }
-    public string Url { get; set; }
+    public Uri Url { get; set; }
     public int? HttpStatusCode { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ExecutedAt { get; set; }
